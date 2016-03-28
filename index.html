@@ -1,0 +1,101 @@
+<html>
+  <script src="http://cdn.tonejs.org/latest/Tone.min.js" charset="utf-8"></script>
+  <script src="GonnaMakeYouSweat.js"></script>
+  <script src="NationalAnthemGermany.js"></script>
+  <script src="NationalAnthemNetherlands.js"></script>
+  <script type="text/javascript">
+
+    function analyzeSong(input) {
+      var timeline = {};
+      var allNotes = {};
+
+
+      var tracks = Object.keys(input);
+      for(var i = 0; i < tracks.length; i++) {
+        var notes = input[tracks[i]];
+
+        for(var j = 0; j < notes.length; j++) {
+
+          if(!timeline.hasOwnProperty(notes[j].time)) {
+            timeline[notes[j].time] = [];
+          }
+
+          if(!allNotes.hasOwnProperty(notes[j].noteName)) {
+            allNotes[notes[j].noteName] = "Present";
+          }
+
+          timeline[notes[j].time].push(notes[j].noteName);
+        }
+      }
+
+      console.log(timeline);
+      console.log(allNotes);
+
+      var table = {};
+      for(var note in allNotes) {
+        table[note] = {};
+        for(var note2 in allNotes) {
+          table[note][note2] = 0.0;
+        }
+      }
+
+
+
+      var steps = Object.keys(timeline);
+      for(var i = 0; i < steps.length; i++) {
+        if(i + 1 >= steps.length) break;
+
+        var key = steps[i];
+        var nextKey = steps[i+1];
+        var currentNote = timeline[key][0];
+        var nextNote = timeline[nextKey][0];
+
+        table[currentNote][nextNote] += 1.0;
+      }
+
+      console.log(steps.length);
+
+      for(var note in allNotes) {
+        //table[note] = {};
+        for(var note2 in allNotes) {
+          table[note][note2] /= steps.length;
+        }
+      }
+
+      console.log(table);
+    }
+
+    Tone.Transport.timeSignature = [4, 4];
+    //Tone.Transport.timeSignature = [3, 4];
+    //Tone.Transport.bpm.value = 114;
+    Tone.Transport.bpm.value = 75;
+    //Tone.Transport.bpm.value = 82;
+
+    song = germany;
+
+    analyzeSong(germany);
+
+    var synths = [];
+
+/*
+    var noteTable = [][];
+
+    var tracks = Object.keys(song);
+    for(var i = 0; i < tracks.length; i++) {
+      var synth = new Tone.SimpleSynth().toMaster();
+      synths.push(synth);
+      var notes = song[tracks[i]];
+      for(var j = 0; j < notes.length; j++) {
+        notes[j].synth = i;
+      }
+
+      var part = new Tone.Part(function(time, chord) {
+          synths[chord.synth].triggerAttackRelease(chord.noteName, chord.duration, time, chord.velocity);
+      }, notes).start();
+    }
+
+    Tone.Transport.start();
+*/
+  </script>
+
+</html>
